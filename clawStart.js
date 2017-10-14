@@ -73,11 +73,33 @@ function drawClawMachine() {
 // A supporting arm
 stand1 = new THREE.Mesh(
 	new THREE.BoxGeometry( 50, 400, 50 ), bodyMaterial );
-	stand1.position.x = -125;
+	stand1.position.x = 125;
 	stand1.position.y = 600;
-	stand1.position.z = -125;
+	stand1.position.z = 125;
 	scene.add( stand1 );
 
+// The other 3 supporting arms
+stand2 = new THREE.Mesh(
+	new THREE.BoxGeometry( 50, 400, 50 ), bodyMaterial );
+	stand2.position.x = -125;
+	stand2.position.y = 600;
+	stand2.position.z = 125;
+	scene.add( stand2 );
+
+stand3 = new THREE.Mesh(
+	new THREE.BoxGeometry( 50, 400, 50 ), bodyMaterial );
+	stand3.position.x = -125;
+	stand3.position.y = 600;
+	stand3.position.z = -125;
+	scene.add( stand3 );
+
+stand4 = new THREE.Mesh(
+	new THREE.BoxGeometry( 50, 400, 50 ), bodyMaterial );
+	stand4.position.x = 125;
+	stand4.position.y = 600;
+	stand4.position.z = -125;
+	scene.add( stand4 );
+	
 }
 
 // Initialization. Define the size of the canvas and store the aspect ratio
