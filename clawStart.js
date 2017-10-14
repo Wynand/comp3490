@@ -70,44 +70,79 @@ function drawClawMachine() {
 	base.position.z = 0;
 	scene.add( base );
 	
-// A supporting arm
+standShape = new THREE.BoxGeometry( 25, 400, 25);
+
+// A supporting arms
 stand1 = new THREE.Mesh(
-	new THREE.BoxGeometry( 50, 400, 50 ), bodyMaterial );
+	standShape , bodyMaterial );
 	stand1.position.x = 125;
 	stand1.position.y = 600;
 	stand1.position.z = 125;
 	scene.add( stand1 );
 
-// The other 3 supporting arms
 stand2 = new THREE.Mesh(
-	new THREE.BoxGeometry( 50, 400, 50 ), bodyMaterial );
+	standShape , bodyMaterial );
 	stand2.position.x = -125;
 	stand2.position.y = 600;
 	stand2.position.z = 125;
 	scene.add( stand2 );
 
 stand3 = new THREE.Mesh(
-	new THREE.BoxGeometry( 50, 400, 50 ), bodyMaterial );
+	standShape , bodyMaterial );
 	stand3.position.x = -125;
 	stand3.position.y = 600;
 	stand3.position.z = -125;
 	scene.add( stand3 );
 
 stand4 = new THREE.Mesh(
-	new THREE.BoxGeometry( 50, 400, 50 ), bodyMaterial );
+	standShape , bodyMaterial );
 	stand4.position.x = 125;
 	stand4.position.y = 600;
 	stand4.position.z = -125;
 	scene.add( stand4 );
-	
+
+boxTop = new THREE.Mesh(
+	new THREE.BoxGeometry( 300, 50, 300 ), bodyMaterial );
+	boxTop.position.x = 0;
+	boxTop.position.y = 800;
+	boxTop.position.z = 0;
+	scene.add( boxTop );
+
+panel = new THREE.Mesh(
+	new THREE.BoxGeometry( 250, 20, 150), bodyMaterial );
+	panel.position.x = 0;
+	panel.position.y = 300;
+	panel.position.z = -150;
+	scene.add( panel );
+
+railShape = new THREE.BoxGeometry( 20, 20, 300 );
+
+railL = new THREE.Mesh(
+	railShape , bodyMaterial );
+	railL.position.x = 125;
+	railL.position.y = 700;
+	railL.position.z = 0;
+	scene.add( railL );
+
+railR = new THREE.Mesh(
+	railShape , bodyMaterial );
+	railR.position.x = -railL.position.x;
+	railR.position.y = railL.position.y;
+	railR.position.z = railL.position.z;
+	scene.add( railR );
+
 }
 
 // Initialization. Define the size of the canvas and store the aspect ratio
 // You can change these as well
 
 function init() {
-	var canvasWidth = 1280;
-	var canvasHeight = 720;
+	var canvasWidth = window.innerWidth ||
+	document.documentElement.clientWidth ||
+	document.body.clientWidth;
+	var canvasHeight = window.innerHeight ||
+	document.documentElement.clientHeight ||
+	document.body.clientHeight; // found in a stack overflow answer by confile
 	var canvasRatio = canvasWidth / canvasHeight;
 
 	// Set up a renderer. This will allow WebGL to make your scene appear
