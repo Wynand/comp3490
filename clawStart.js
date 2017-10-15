@@ -52,6 +52,11 @@ function drawClawMachine() {
 	//////////////////////////////
 	// Some simple material definitions - This may become more complex in A2
 
+	var arcadeMachine = new THREE.Group();
+	var frame = new THREE.Group();
+	var crane = new THREE.Group();
+	var cPanel = new THREE.Group();
+
 	var bodyMaterial = new THREE.MeshLambertMaterial();
 	bodyMaterial.color.setRGB( 0.5, 0.5, 0.5 );
 
@@ -68,7 +73,7 @@ function drawClawMachine() {
 	base.position.x = 0;
 	base.position.y = 200;
 	base.position.z = 0;
-	scene.add( base );
+	frame.add( base );
 	
 standShape = new THREE.BoxGeometry( 25, 400, 25);
 
@@ -78,42 +83,42 @@ stand1 = new THREE.Mesh(
 	stand1.position.x = 125;
 	stand1.position.y = 600;
 	stand1.position.z = 125;
-	scene.add( stand1 );
+	frame.add( stand1 );
 
 stand2 = new THREE.Mesh(
 	standShape , bodyMaterial );
 	stand2.position.x = -125;
 	stand2.position.y = 600;
 	stand2.position.z = 125;
-	scene.add( stand2 );
+	frame.add( stand2 );
 
 stand3 = new THREE.Mesh(
 	standShape , bodyMaterial );
 	stand3.position.x = -125;
 	stand3.position.y = 600;
 	stand3.position.z = -125;
-	scene.add( stand3 );
+	frame.add( stand3 );
 
 stand4 = new THREE.Mesh(
 	standShape , bodyMaterial );
 	stand4.position.x = 125;
 	stand4.position.y = 600;
 	stand4.position.z = -125;
-	scene.add( stand4 );
+	frame.add( stand4 );
 
 boxTop = new THREE.Mesh(
 	new THREE.BoxGeometry( 300, 50, 300 ), bodyMaterial );
 	boxTop.position.x = 0;
 	boxTop.position.y = 800;
 	boxTop.position.z = 0;
-	scene.add( boxTop );
+	frame.add( boxTop );
 
 panel = new THREE.Mesh(
 	new THREE.BoxGeometry( 250, 20, 150), bodyMaterial );
 	panel.position.x = 0;
 	panel.position.y = 300;
 	panel.position.z = -150;
-	scene.add( panel );
+	cPanel.add( panel );
 
 railShape = new THREE.BoxGeometry( 20, 20, 300 );
 
@@ -122,14 +127,33 @@ railL = new THREE.Mesh(
 	railL.position.x = 125;
 	railL.position.y = 700;
 	railL.position.z = 0;
-	scene.add( railL );
+	crane.add( railL );
 
 railR = new THREE.Mesh(
 	railShape , bodyMaterial );
 	railR.position.x = -railL.position.x;
 	railR.position.y = railL.position.y;
 	railR.position.z = railL.position.z;
-	scene.add( railR );
+	crane.add( railR );
+
+railArm = new THREE.Group();
+	
+railB = new THREE.Mesh(
+	new THREE.BoxGeometry( 300 , 20, 20 ), bodyMaterial );
+	panel.position.x = 0;
+	panel.position.y = 300;
+	panel.position.z = 0;
+	railArm.add( railB );
+
+	railArm.position.y = 700;
+
+	crane.add( railArm );
+
+	arcadeMachine.add( frame );
+	arcadeMachine.add( crane );
+	arcadeMachine.add( cPanel );
+
+	scene.add( arcadeMachine );
 
 }
 
