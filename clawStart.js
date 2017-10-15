@@ -11,10 +11,13 @@
 
 
  /*global variables, coordinates, clock etc.  */
+var keyboard;
 var camera, scene, renderer;
 var cameraControls;
 
 var clock = new THREE.Clock();
+
+var view = 1;
 
 function fillScene() {
 	scene = new THREE.Scene();
@@ -93,12 +96,13 @@ function makeControlPanel( bodyMaterial ){
 			panel.position.y = 0;
 			panel.position.z = 0;
 		cPanel.add( panel );
-
-		joyStick = new THREE.Mesh( new THREE.BoxGeometry( 10, 80, 10), bodyMaterial );
-			joyStick.position.x = -75;
-			joyStick.position.y = 50;
-			joyStick.position.z = 0;
-		cPanel.add( joyStick );
+		var jContainer = new THREE.Group(); // should rotate
+			joyStick = new THREE.Mesh( new THREE.BoxGeometry( 10, 80, 10), bodyMaterial );
+				joyStick.position.x = -75;
+				joyStick.position.y = 50;
+				joyStick.position.z = 0;
+			jContainer.add( joyStick );	
+		cPanel.add( jContainer );
 
 	return cPanel;
 }
@@ -242,6 +246,8 @@ function makeCrane( bodyMaterial ){
 
 		railArm = makeRailArm( bodyMaterial ); // this will move forward and backward
 
+		document.addEventList
+
 		crane.add( railArm );
 
 	return crane;
@@ -301,8 +307,11 @@ function init() {
 	// Moving the camera with the mouse is simple enough - so this is provided. However, note that by default,
 	// the keyboard moves the viewpoint as well
 	cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
-	camera.position.set( -800, 600, -500);
-	cameraControls.target.set(4,301,92);
+	camera.position.set( -800, 600, -1200);
+	cameraControls.target.set(0,400,0);
+
+	keyboard = new KeyboardState();
+
 }
 
 	// We want our document object model (a javascript / HTML construct) to include our canvas
@@ -316,6 +325,19 @@ function addToDOM() {
 	// Since you might change view, or move things
 	// We cant to update what appears
 function animate() {
+	keyboard.update();
+	if(keyboard.down("v")){
+		view = -view;
+	} 
+
+	if(view == -1){
+		camera.position.set( 0, 800, -1200);
+		cameraControls.target.set(0,400,0);
+	}else if(view == 1){
+		camera.position.set( -800, 600, -1200);
+		cameraControls.target.set(0,400,0);
+	}
+
 	window.requestAnimationFrame(animate);
 	render();
 }
@@ -326,7 +348,6 @@ function animate() {
 function render() {
 	var delta = clock.getDelta();
 	cameraControls.update(delta);
-
 	renderer.render(scene, camera);
 }
 
