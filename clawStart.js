@@ -14,10 +14,15 @@
 var keyboard;
 var camera, scene, renderer;
 var cameraControls;
+var updates = new Array();
 
 var clock = new THREE.Clock();
 
 var view = 1;
+
+xcmd = 0;
+ycmd = 0;
+zcmd = 0;
 
 function fillScene() {
 	scene = new THREE.Scene();
@@ -63,6 +68,19 @@ function makeClawMachine(){
 	var frame = makeFrame( bodyMaterial );
 	var crane = makeCrane( bodyMaterial ); // will move up/down
 		crane.position.y = 700; 
+
+	updates.push(
+
+		function(){
+			var craneRef = crane;
+			if(keyboard.pressed("e") && craneRef.position.y < 700){
+				crane.position.y += 1;
+			} else if(craneRef.position.y > 500 && (keyboard.pressed("q") || keyboard.pressed("space")) ){
+				crane.position.y += -1;
+			}
+		}
+
+	);
 
 	var cPanel = makeControlPanel( bodyMaterial );
 		cPanel.position.y = 300;
@@ -246,7 +264,19 @@ function makeCrane( bodyMaterial ){
 
 		railArm = makeRailArm( bodyMaterial ); // this will move forward and backward
 
-		document.addEventList
+			updates.push(
+
+				function(){
+					var railRef = railArm;
+					var max = 100;
+					if(keyboard.pressed("w") && railRef.position.z < max){
+						railRef.position.z += 1;
+					} else if(keyboard.pressed("s") && railRef.position.z > -max){
+						railRef.position.z += -1;
+					}
+				}
+
+			);
 
 		crane.add( railArm );
 
@@ -263,6 +293,19 @@ function makeRailArm( bodyMaterial ){
 
 		hangingArm = makeHangingArm( bodyMaterial ); // this will move right/left
 			hangingArm.position.y = -20;
+			updates.push(
+
+				function(){
+					var haRef = hangingArm;
+					var max = 125;
+					if(keyboard.pressed("a") && haRef.position.x < max){
+						haRef.position.x += 1;
+					} else if(keyboard.pressed("d") && haRef.position.x > -max){
+						haRef.position.x += -1;
+					}
+				}
+
+			);
 		railArm.add( hangingArm );
 
 	return railArm;
@@ -307,10 +350,13 @@ function init() {
 	// Moving the camera with the mouse is simple enough - so this is provided. However, note that by default,
 	// the keyboard moves the viewpoint as well
 	cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
-	camera.position.set( -800, 600, -1200);
+	camera.position.set( 800, 600, -1200);
 	cameraControls.target.set(0,400,0);
 
 	keyboard = new KeyboardState();
+
+	updates.push(keyboard.update);
+	updates.push(setCameraAngle);
 
 }
 
@@ -325,7 +371,20 @@ function addToDOM() {
 	// Since you might change view, or move things
 	// We cant to update what appears
 function animate() {
-	keyboard.update();
+	update();
+	window.requestAnimationFrame(animate);
+	render();
+}
+
+viewSet = false;
+
+function update(){
+	for (i in updates){
+		updates[i]();
+	}
+}
+
+function setCameraAngle(){
 	if(keyboard.down("v")){
 		view = -view;
 	} 
@@ -333,13 +392,12 @@ function animate() {
 	if(view == -1){
 		camera.position.set( 0, 800, -1200);
 		cameraControls.target.set(0,400,0);
-	}else if(view == 1){
-		camera.position.set( -800, 600, -1200);
+		viewSet = true;
+	}else if(view == 1 && viewSet){
+		camera.position.set( 800, 600, -1200);
 		cameraControls.target.set(0,400,0);
+		viewSet = false;
 	}
-
-	window.requestAnimationFrame(animate);
-	render();
 }
 
 	// getDelta comes from THREE.js - this tells how much time passed since this was last called
