@@ -20,9 +20,8 @@ var clock = new THREE.Clock();
 
 var view = 1;
 
-xcmd = 0;
-ycmd = 0;
-zcmd = 0;
+xrot = 0;
+zrot = 0;
 
 function fillScene() {
 	scene = new THREE.Scene();
@@ -116,10 +115,46 @@ function makeControlPanel( bodyMaterial ){
 		cPanel.add( panel );
 		var jContainer = new THREE.Group(); // should rotate
 			joyStick = new THREE.Mesh( new THREE.BoxGeometry( 10, 80, 10), bodyMaterial );
-				joyStick.position.x = -75;
-				joyStick.position.y = 50;
-				joyStick.position.z = 0;
+				joyStick.position.y = 40;
 			jContainer.add( joyStick );	
+				jContainer.position.x = -75;
+				jContainer.position.y = 10;
+				jContainer.position.z = 0;
+
+			updates.push(
+
+				function(){
+					var jRef = jContainer;
+					var rot = 0.3;
+
+					jRef.rotateX(-xrot);
+					xrot = 0;
+					jRef.rotateZ(-zrot);
+					zrot = 0;
+
+					if(keyboard.pressed("d") || keyboard.pressed("right")){
+						zrot += rot;
+					} 
+
+					if(keyboard.pressed("a") || keyboard.pressed("left")){
+						zrot += -rot;
+					} 
+
+					jRef.rotateZ(zrot);
+
+					if(keyboard.pressed("w") || keyboard.pressed("up")){
+						xrot += rot;
+					} 
+
+					if(keyboard.pressed("s") || keyboard.pressed("down")){
+						xrot += -rot;
+					}  
+
+					jRef.rotateX(xrot);
+				}
+
+			);
+
 		cPanel.add( jContainer );
 
 	return cPanel;
@@ -269,9 +304,9 @@ function makeCrane( bodyMaterial ){
 				function(){
 					var railRef = railArm;
 					var max = 100;
-					if(keyboard.pressed("w") && railRef.position.z < max){
+					if((keyboard.pressed("w") || keyboard.pressed("up")) && railRef.position.z < max){
 						railRef.position.z += 1;
-					} else if(keyboard.pressed("s") && railRef.position.z > -max){
+					} else if((keyboard.pressed("s") || keyboard.pressed("down")) && railRef.position.z > -max){
 						railRef.position.z += -1;
 					}
 				}
@@ -298,9 +333,9 @@ function makeRailArm( bodyMaterial ){
 				function(){
 					var haRef = hangingArm;
 					var max = 125;
-					if(keyboard.pressed("a") && haRef.position.x < max){
+					if((keyboard.pressed("a") || keyboard.pressed("left")) && haRef.position.x < max){
 						haRef.position.x += 1;
-					} else if(keyboard.pressed("d") && haRef.position.x > -max){
+					} else if((keyboard.pressed("d") || keyboard.pressed("right")) && haRef.position.x > -max){
 						haRef.position.x += -1;
 					}
 				}
