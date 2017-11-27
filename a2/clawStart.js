@@ -47,9 +47,13 @@ function fillScene() {
  	scene.add(gridXZ);
 
 	var linoleum = new THREE.MeshPhysicalMaterial( {
+		transparent: true,
+		opacity: .97,
 		specular: 0x050505,
-		shininess: 100
+		shininess: 1,
+		metalness: 1
 	} )
+	linoleum.color.setRGB( 0.7, 0.5, 0.3);
  	var floor = new THREE.Mesh( new THREE.BoxGeometry( 10000, 1, 10000), linoleum );
 	scene.add(floor);	
 
@@ -62,8 +66,19 @@ function fillScene() {
 }
 
 function drawClawMachine() {
+	var clawMachineReflection = makeClawMachine();
+	
+
 	var clawMachine = makeClawMachine();
 	scene.add( clawMachine );
+
+	clawMachineReflection.rotateX(3.14569);
+	clawMachineReflection.rotateY(3.14569);
+	scene.add( clawMachineReflection );
+	
+	//clawMachineReflection.rotateX(3.14569);
+	//clawMachineReflection.rotateY(3.14569);
+	//scene.add( clawMachineReflection );
 } // drawClawMachine
 
 function makeClawMachine(){
@@ -94,13 +109,13 @@ function makeClawMachine(){
 
 	var prizeBucket = makeChute( bodyMaterial );
 		prizeBucket.position.y = 420;
-		prizeBucket.position.x = -75;
+		prizeBucket.position.x = 0;
 		prizeBucket.position.z = -75;
 
 	var prizeChute = makeChute( bodyMaterial );
 		prizeChute.rotateX(1);
 		prizeChute.position.y = 200;
-		prizeChute.position.x = -75;
+		prizeChute.position.x = 0;
 		prizeChute.position.z = -150;
 
 	arcadeMachine.add( frame );

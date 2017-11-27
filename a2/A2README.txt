@@ -12,6 +12,7 @@ CS3490 Assignment 2: Claw Machine (Deluxe Edition)
 ***********************************************************************/
 
  Windows - Chrome 
+ Linux - Chrome
 
  /**********************************************************************
  * Which components of the assignment do you feel you have completed.
