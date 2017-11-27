@@ -41,17 +41,24 @@ function fillScene() {
 
 	scene.add( light );
 
-//A simple grid floor, the variables hint at the plane that this lies within
-// Later on we might install new flooring.
- var gridXZ = new THREE.GridHelper(2000, 100, new THREE.Color(0xCCCCCC), new THREE.Color(0x888888));
- scene.add(gridXZ);
+	//A simple grid floor, the variables hint at the plane that this lies within
+	// Later on we might install new flooring.
+ 	var gridXZ = new THREE.GridHelper(2000, 100, new THREE.Color(0xCCCCCC), new THREE.Color(0x888888));
+ 	scene.add(gridXZ);
 
- //Visualize the Axes - Useful for debugging, can turn this off if desired
- var axes = new THREE.AxisHelper(150);
- axes.position.y = 1;
- scene.add(axes);
+	var linoleum = new THREE.MeshPhysicalMaterial( {
+		specular: 0x050505,
+		shininess: 100
+	} )
+ 	var floor = new THREE.Mesh( new THREE.BoxGeometry( 10000, 1, 10000), linoleum );
+	scene.add(floor);	
 
- drawClawMachine();
+ 	//Visualize the Axes - Useful for debugging, can turn this off if desired
+ 	var axes = new THREE.AxisHelper(150);
+ 	axes.position.y = 1;
+ 	scene.add(axes);
+
+ 	drawClawMachine();
 }
 
 function drawClawMachine() {
@@ -61,7 +68,7 @@ function drawClawMachine() {
 
 function makeClawMachine(){
 	var arcadeMachine = new THREE.Group();
-	var bodyMaterial = new THREE.MeshLambertMaterial();
+	var bodyMaterial = new THREE.MeshPhysicalMaterial();
 	bodyMaterial.color.setRGB( 0.5, 0.5, 0.5 );
 
 	var frame = makeFrame( bodyMaterial );
@@ -188,8 +195,8 @@ function makeFrame( bodyMaterial ){
 }
 
 function makeGlass(){
-	glassMaterial = new THREE.MeshLambertMaterial({transparent: true});
-		glassMaterial.opacity = 0.1;
+	glassMaterial = new THREE.MeshPhysicalMaterial({transparent: true});
+		glassMaterial.opacity = 0.3;
 		glassMaterial.color.setRGB(70,130,180);
 
 	var glass = new THREE.Group();
