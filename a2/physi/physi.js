@@ -31,6 +31,8 @@ window.Physijs = (function() {
 
 	Physijs.scripts = {};
 
+	Physijs.scripts.worker = 'physi/physijs_worker.js'
+
 	Eventable = function() {
 		this._eventListeners = {};
 	};
@@ -485,7 +487,7 @@ window.Physijs = (function() {
 
 
 		params = params || {};
-		params.ammo = Physijs.scripts.ammo || 'ammo.js';
+		params.ammo = Physijs.scripts.ammo || '../js/libs/ammo.js';
 		params.fixedTimeStep = params.fixedTimeStep || 1 / 60;
 		params.rateLimit = params.rateLimit || true;
 		this.execute( 'init', params );
