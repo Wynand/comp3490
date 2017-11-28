@@ -11,7 +11,6 @@ CS3490 Assignment 2: Claw Machine (Deluxe Edition)
 * What browser and OS did you use to develop / test?
 ***********************************************************************/
 
- Windows - Chrome 
  Linux - Chrome
 
  /**********************************************************************
@@ -28,16 +27,16 @@ ii. [2 Marks] Build a fancier claw. The design is up to you, but it should be ca
 (Fully Completed)
 
 iii. [2 Marks] Add at least 2 spotlights inside the claw machine that illuminate objects inside, and fancier lighting to the room
-(Fully Completed, Partially Completed)
+(Fully Completed)
 
 iv. [1 Mark] Add an assortment of objects inside the claw machine. What you choose is up to you.
 (Fully Completed)
 
 v. [2 Marks] Add textures to the outside of your box. This could include a wood grain, or texture of your choice
-(Fully Completed, Partially Completed)
+(Fully Completed)
 
 vi. [1 Mark] Add a sign with the name of your game (a marquee) to the machine. This should be illuminated.
-(Fully Completed, Partially Completed, Not Completed)
+(Fully Completed)
 
 vii. [1 Mark] Give the floor a glossy appearance, such that a slightly blurred image of the machine shows up faintly on the floor
 (Fully Completed)
@@ -59,3 +58,14 @@ xi. [Bonus: 2 Marks] Your claw can pick up objects, carry them to the prize bin,
  **********************************************************************/
 
  i. Claw goes to position to drop item in chute, not to start.  This makes more sense to me.
+
+ To run this on linux, you must turn off a feature of chrome that stops you from spinning up workers from a local site.
+ You can do this by starting chrome via a command line command:
+ google-chrome --allow-file-access-from-files
+ and then opening clawmachine.html
+
+ vi. the name of the game is 'FUN'
+
+ vii. The floor does 'reflect', just look closely.
+
+ ix. The coin slots and buttons glow

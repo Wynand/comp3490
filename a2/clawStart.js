@@ -101,8 +101,6 @@ function fillScene() {
 	*/
 	//A simple grid floor, the variables hint at the plane that this lies within
 	// Later on we might install new flooring.
- 	var gridXZ = new THREE.GridHelper(2000, 100, new THREE.Color(0xCCCCCC), new THREE.Color(0x888888));
- 	scene.add(gridXZ);
 
 	var linoleum = Physijs.createMaterial(new THREE.MeshPhysicalMaterial( {
 		transparent: true,
@@ -233,9 +231,11 @@ function makeClawMachine(){
 }
 
 function makeControlPanel( bodyMaterial ){
-	var cPanel = new THREE.Group();	
+	var cPanel = new THREE.Group();
+	
+	var baseMaterial = Physijs.createMaterial(new THREE.MeshPhysicalMaterial({ map: THREE.ImageUtils.loadTexture('src/wood2.jpg') }));
 
-		panel = new Physijs.BoxMesh( new THREE.BoxGeometry( 250, 20, 100), bodyMaterial, 0 );
+		panel = new Physijs.BoxMesh( new THREE.BoxGeometry( 250, 20, 100), baseMaterial, 0 );
 			panel.position.x = 0;
 			panel.position.y = 0;
 			panel.position.z = 0;
@@ -402,7 +402,10 @@ function makeFrame( bodyMaterial ){
 	var frameGeo = new THREE.BoxGeometry( 0, 0, 0 );
 	var frame = new Physijs.BoxMesh( frameGeo, bodyMaterial, 0 );
 
-		var base = new Physijs.BoxMesh( new THREE.BoxGeometry( 300, 400, 300 ), bodyMaterial, 0 );
+		var baseMaterial = Physijs.createMaterial(new THREE.MeshPhysicalMaterial({ map: THREE.ImageUtils.loadTexture('src/wood.jpg') }));
+
+
+		var base = new Physijs.BoxMesh( new THREE.BoxGeometry( 300, 400, 300 ), baseMaterial, 0 );
 			base.position.x = 0;
 			base.position.y = 200;
 			base.position.z = 0;
@@ -419,11 +422,46 @@ function makeFrame( bodyMaterial ){
 		frame.add( glass );
 
 		boxTop = new Physijs.BoxMesh(
-			new THREE.BoxGeometry( 300, 50, 300 ), bodyMaterial, 0 );
+			new THREE.BoxGeometry( 300, 50, 300 ), baseMaterial, 0 );
 			boxTop.position.x = 0;
 			boxTop.position.y = 800;
 			boxTop.position.z = 0;
+			var spot1 = makeChute(bodyMaterial);
+				spot1.castShadow = true;
+			var light1 = new THREE.PointLight( 0xffffff, 10 , 800);
+				light1.castShadow = true;
+				light1.receiveShadow = true;
+				light1.position.y = 5;
+			spot1.add(light1);
+			var spot2 = makeChute(bodyMaterial);
+				spot2.castShadow = true;
+			var light2 = new THREE.PointLight( 0xffffff, 10 , 800);
+				light2.castShadow = true;
+				light2.receiveShadow = true;
+				light1.position.y = 5;
+			spot2.add(light2);
 
+			spot1.position.z = -100;
+			spot1.position.y = -55;
+			spot2.position.z = -spot1.position.z;
+			spot2.position.y = spot1.position.y;
+
+			boxTop.add(spot1);
+			boxTop.add(spot2);
+
+			var marMaterial = Physijs.createMaterial(new THREE.MeshPhysicalMaterial({ map: THREE.ImageUtils.loadTexture('src/fun.jpg') }));
+			var marquis = new Physijs.BoxMesh(
+				new THREE.BoxGeometry( 250, 100, 30 ), marMaterial, 0 );
+			marquis.position.z = -80;
+			marquis.position.y = 60;
+			var mlight = new THREE.PointLight( 0xffffff, 5 , 200);
+			mlight.castShadow = true;
+			mlight.receiveShadow = true;
+			mlight.position.y = 5;
+			mlight.position.z = -20;
+			marquis.add(mlight);
+
+			boxTop.add(marquis);
 
 		frame.add( boxTop );
 
@@ -476,25 +514,28 @@ function makeGlass(){
 }
 
 function makeChute( bodyMaterial ){
+
+	var baseMaterial = Physijs.createMaterial(new THREE.MeshPhysicalMaterial({ map: THREE.ImageUtils.loadTexture('src/rust.jpg') }));
+
 	var chuteGeo = new THREE.BoxGeometry( 0, 0, 0 );
-	var chute = new Physijs.BoxMesh( chuteGeo, bodyMaterial, 0 );
+	var chute = new Physijs.BoxMesh( chuteGeo, baseMaterial, 0 );
 		var sideLR = new THREE.BoxGeometry( 4, 80, 80);
 		var sideFB = new THREE.BoxGeometry( 80, 80, 4);
 		var disp = 38;
 
-		var front = new Physijs.BoxMesh( sideFB, bodyMaterial, 0 );
+		var front = new Physijs.BoxMesh( sideFB, baseMaterial, 0 );
 			front.position.z = -disp;
 		chute.add( front );
 
-		var back = new Physijs.BoxMesh( sideFB, bodyMaterial, 0 );
+		var back = new Physijs.BoxMesh( sideFB, baseMaterial, 0 );
 			back.position.z = disp;
 		chute.add( back );
 
-		var left = new Physijs.BoxMesh( sideLR, bodyMaterial, 0 );
+		var left = new Physijs.BoxMesh( sideLR, baseMaterial, 0 );
 			left.position.x = -disp;
 		chute.add( left );
 
-		var right = new Physijs.BoxMesh( sideLR, bodyMaterial, 0 );
+		var right = new Physijs.BoxMesh( sideLR, baseMaterial, 0 );
 			right.position.x = disp;
 		chute.add( right );
 
