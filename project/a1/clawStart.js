@@ -11,17 +11,22 @@
 
 
  /*global variables, coordinates, clock etc.  */
-var keyboard;
-var camera1, camera2, scene, renderer;
-var cameraControls;
 
 var loadWorld = function() {
+
+	var keyboard;
+	var camera1, camera2, scene, renderer;
+	var cameraControls;
+
+	var currentLocation = window.location;
 
 	var updates = new Array();
 
 	var clock = new THREE.Clock();
 
 	var view = 1;
+	var updatable = new Map();
+
 
 	xrot = 0;
 	zrot = 0;
@@ -70,15 +75,17 @@ var loadWorld = function() {
 		var frame = makeFrame( bodyMaterial );
 		var crane = makeCrane( bodyMaterial ); // will move up/down
 			crane.position.y = 700; 
+			crane.name = 'crane';
+			updatable.set('crane', crane);
 
 		updates.push(
 
 			function(){
 				var craneRef = crane;
 				if(keyboard.pressed("e") && craneRef.position.y < 700){
-					crane.position.y += 1;
+					updatable.get('crane').position.y += 1;
 				} else if(craneRef.position.y > 500 && (keyboard.pressed("q") || keyboard.pressed("space")) ){
-					crane.position.y += -1;
+					updatable.get('crane').position.y += -1;
 				}
 			}
 
@@ -123,11 +130,13 @@ var loadWorld = function() {
 					jContainer.position.x = -75;
 					jContainer.position.y = 10;
 					jContainer.position.z = 0;
+					jContainer.name = 'jContainer';
+					updatable.set('jContainer', jContainer);
 
 				updates.push(
 
 					function(){
-						var jRef = jContainer;
+						var jRef = updatable.get('jContainer');
 						var rot = 0.3;
 
 						jRef.rotateX(-xrot);
@@ -301,11 +310,13 @@ var loadWorld = function() {
 			crane.add( railR );
 
 			railArm = makeRailArm( bodyMaterial ); // this will move forward and backward
+			railArm.name = 'railArm';
+			updatable.set('railArm',railArm)
 
 				updates.push(
 
 					function(){
-						var railRef = railArm;
+						var railRef = updatable.get('railArm');
 						var max = 100;
 						if((keyboard.pressed("w") || keyboard.pressed("up")) && railRef.position.z < max){
 							railRef.position.z += 1;
@@ -331,10 +342,12 @@ var loadWorld = function() {
 
 			hangingArm = makeHangingArm( bodyMaterial ); // this will move right/left
 				hangingArm.position.y = -20;
+				hangingArm.name = 'hangingArm';
+				updatable.set('hangingArm', hangingArm)
 				updates.push(
 
 					function(){
-						var haRef = hangingArm;
+						var haRef = updatable.get('hangingArm');
 						var max = 125;
 						if((keyboard.pressed("a") || keyboard.pressed("left")) && haRef.position.x < max){
 							haRef.position.x += 1;
