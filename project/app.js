@@ -1,7 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var THREE = require('three.js')();
+var THREE = require('three');
 
 var updatable = new Map();
 var initialized = false;
@@ -29,7 +29,7 @@ app.get('/js/KeyboardState.js',
 
 app.post('/update', 
 	function(req, res){
-		
+
 	}
 )
 
