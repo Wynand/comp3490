@@ -5,10 +5,11 @@ var THREE = require('three');
 
 var updatable = new Map();
 var initialized = false;
+var updates = new Array();
 
 app.get('/', 
 	function(req, res){
-		if(!inititialized){
+		if(!initialized){
 			makeClawMachine();
 		}	
 		res.sendFile(__dirname + '/a1/clawmachine.html');
