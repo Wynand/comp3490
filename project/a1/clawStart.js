@@ -26,6 +26,9 @@ var loadWorld = function() {
 
 	var view = 1;
 	var updatable = new Map();
+	var clock = new THREE.Clock();
+
+	var socket = io()
 
 
 	xrot = 0;
@@ -77,15 +80,40 @@ var loadWorld = function() {
 			crane.position.y = 700; 
 			crane.name = 'crane';
 			updatable.set('crane', crane);
+			socket.on('crane', function(data){
+				crane.position.y = data.data;
+			});
 
 		updates.push(
 
 			function(){
 				var craneRef = crane;
 				if(keyboard.pressed("e") && craneRef.position.y < 700){
-					updatable.get('crane').position.y += 1;
+					//updatable.get('crane').position.y += 1;
+					$.ajax({
+						type: 'POST',
+						url: '/update',
+						data: JSON.stringify({
+							name: 'crane',
+							direction: 'incr'
+						}),
+						contentType: 'application/json',
+						cache: false
+					});
+					//
 				} else if(craneRef.position.y > 500 && (keyboard.pressed("q") || keyboard.pressed("space")) ){
-					updatable.get('crane').position.y += -1;
+					//updatable.get('crane').position.y += -1;
+					$.ajax({
+						type: 'POST',
+						url: '/update',
+						data: JSON.stringify({
+							name: 'crane',
+							direction: 'decr'
+						}),
+						contentType: 'application/json',
+						cache: false
+					});
+					//
 				}
 			}
 
@@ -132,12 +160,24 @@ var loadWorld = function() {
 					jContainer.position.z = 0;
 					jContainer.name = 'jContainer';
 					updatable.set('jContainer', jContainer);
+					rot = 0.3;
+					socket.on('jContainer', function(data){
+						if(data.dir == 'rotx'){
+							jContainer.rotateX(-xrot);
+							xrot = 0;
+							xrot = data.rot;
+						} else if(data.rot == 'rotz'){
+							jContainer.rotateZ(-zrot);
+							zrot = 0;
+							zrot = data.rot;
+						}
+						railArm.position.z = data.data;
+					});
 
 				updates.push(
 
 					function(){
 						var jRef = updatable.get('jContainer');
-						var rot = 0.3;
 
 						jRef.rotateX(-xrot);
 						xrot = 0;
@@ -153,6 +193,21 @@ var loadWorld = function() {
 						} 
 
 						jRef.rotateZ(zrot);
+						if(zrot != 0){
+							$.ajax({
+								type: 'POST',
+								url: '/update',
+								data: JSON.stringify({
+									name: 'jContainer',
+									direction: 'zrot',
+									value: zrot
+								}),
+								contentType: 'application/json',
+								cache: false
+							});
+						}
+						//
+
 
 						if(keyboard.pressed("w") || keyboard.pressed("up")){
 							xrot += rot;
@@ -163,6 +218,21 @@ var loadWorld = function() {
 						}  
 
 						jRef.rotateX(xrot);
+
+						if(xrot != 0){
+							$.ajax({
+								type: 'POST',
+								url: '/update',
+								data: JSON.stringify({
+									name: 'jContainer',
+									direction: 'xrot',
+									value: xrot
+								}),
+								contentType: 'application/json',
+								cache: false
+							});
+						}
+						//
 					}
 
 				);
@@ -312,6 +382,9 @@ var loadWorld = function() {
 			railArm = makeRailArm( bodyMaterial ); // this will move forward and backward
 			railArm.name = 'railArm';
 			updatable.set('railArm',railArm)
+			socket.on('railArm', function(data){
+				railArm.position.z = data.data;
+			});
 
 				updates.push(
 
@@ -319,9 +392,29 @@ var loadWorld = function() {
 						var railRef = updatable.get('railArm');
 						var max = 100;
 						if((keyboard.pressed("w") || keyboard.pressed("up")) && railRef.position.z < max){
-							railRef.position.z += 1;
+							$.ajax({
+								type: 'POST',
+								url: '/update',
+								data: JSON.stringify({
+									name: 'railArm',
+									direction: 'incr'
+								}),
+								contentType: 'application/json',
+								cache: false
+							});
+							//
 						} else if((keyboard.pressed("s") || keyboard.pressed("down")) && railRef.position.z > -max){
-							railRef.position.z += -1;
+							$.ajax({
+								type: 'POST',
+								url: '/update',
+								data: JSON.stringify({
+									name: 'railArm',
+									direction: 'decr'
+								}),
+								contentType: 'application/json',
+								cache: false
+							});
+							//
 						}
 					}
 
@@ -344,6 +437,9 @@ var loadWorld = function() {
 				hangingArm.position.y = -20;
 				hangingArm.name = 'hangingArm';
 				updatable.set('hangingArm', hangingArm)
+				socket.on('hangingArm', function(data){
+					hangingArm.position.x = data.data;
+				});
 				updates.push(
 
 					function(){
@@ -351,8 +447,30 @@ var loadWorld = function() {
 						var max = 125;
 						if((keyboard.pressed("a") || keyboard.pressed("left")) && haRef.position.x < max){
 							haRef.position.x += 1;
+							$.ajax({
+								type: 'POST',
+								url: '/update',
+								data: JSON.stringify({
+									name: 'hangingArm',
+									direction: 'incr'
+								}),
+								contentType: 'application/json',
+								cache: false
+							});
+							//
 						} else if((keyboard.pressed("d") || keyboard.pressed("right")) && haRef.position.x > -max){
 							haRef.position.x += -1;
+							$.ajax({
+								type: 'POST',
+								url: '/update',
+								data: JSON.stringify({
+									name: 'hangingArm',
+									direction: 'decr'
+								}),
+								contentType: 'application/json',
+								cache: false
+							});
+							//
 						}
 					}
 
@@ -412,11 +530,14 @@ var loadWorld = function() {
 		cameraControls = new THREE.DeviceOrientationControls( camera );
 		camera.position.set( 800, 600, -1200);
 		//cameraControls.target.set(0,400,0);
+		
 
 		keyboard = new KeyboardState();
 
 		updates.push(keyboard.update);
 		updates.push(setCameraAngle);
+
+		setInterval(update,1000/60);
 
 	}
 
@@ -431,7 +552,6 @@ var loadWorld = function() {
 		// Since you might change view, or move things
 		// We cant to update what appears
 	function animate() {
-		update();
 		window.requestAnimationFrame(animate);
 		render();
 	}
