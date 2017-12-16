@@ -147,18 +147,23 @@ function makeRailArm( bodyMaterial ){
 			hangingArm.position.y = -20;
 			hangingArm.name = 'hangingArm';
 			updatable.set('hangingArm', new Map())
-			updates.push(
-
+			var haRef = hangingArm;
+			var max = 125;
+			updatable.get('hangingArm').set('incr',
 				function(){
-					var haRef = updatable.get('hangingArm');
-					var max = 125;
-					if((keyboard.pressed("a") || keyboard.pressed("left")) && haRef.position.x < max){
+					if(haRef.position.x < max){
 						haRef.position.x += 1;
-					} else if((keyboard.pressed("d") || keyboard.pressed("right")) && haRef.position.x > -max){
-						haRef.position.x += -1;
+						io.sockets.emit('hangingArm', {data: haRef.position.x});
 					}
 				}
-
+			);
+			updatable.get('hangingArm').set('decr',
+				function(){
+					if(haRef.position.x > -max){
+						haRef.position.x += -1;
+						io.sockets.emit('hangingArm', {data: haRef.position.x});
+					}
+				}
 			);
 		railArm.add( hangingArm );
 

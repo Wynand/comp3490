@@ -444,7 +444,6 @@ var loadWorld = function() {
 						var haRef = updatable.get('hangingArm');
 						var max = 125;
 						if((keyboard.pressed("left")) && haRef.position.x < max){
-							haRef.position.x += 1;
 							$.ajax({
 								type: 'POST',
 								url: '/update',
@@ -457,7 +456,6 @@ var loadWorld = function() {
 							});
 							//
 						} else if((keyboard.pressed("right")) && haRef.position.x > -max){
-							haRef.position.x += -1;
 							$.ajax({
 								type: 'POST',
 								url: '/update',
