@@ -15,20 +15,18 @@
 var loadWorld = function() {
 
 	var keyboard;
-	var camera1, camera2, scene, renderer;
+	var camera, scene, renderer;
 	var cameraControls;
 
-	var currentLocation = window.location;
 
 	var updates = new Array();
-
-	var clock = new THREE.Clock();
 
 	var view = 1;
 	var updatable = new Map();
 	var clock = new THREE.Clock();
 
 	var socket = io()
+	var currentLocation = window.location;
 
 
 	xrot = 0;
@@ -88,7 +86,7 @@ var loadWorld = function() {
 
 			function(){
 				var craneRef = crane;
-				if(keyboard.pressed("e") && craneRef.position.y < 700){
+				if(keyboard.pressed("shift") && craneRef.position.y < 700){
 					//updatable.get('crane').position.y += 1;
 					$.ajax({
 						type: 'POST',
@@ -101,7 +99,7 @@ var loadWorld = function() {
 						cache: false
 					});
 					//
-				} else if(craneRef.position.y > 500 && (keyboard.pressed("q") || keyboard.pressed("space")) ){
+				} else if(keyboard.pressed("space")){
 					//updatable.get('crane').position.y += -1;
 					$.ajax({
 						type: 'POST',
@@ -184,11 +182,11 @@ var loadWorld = function() {
 						jRef.rotateZ(-zrot);
 						zrot = 0;
 
-						if(keyboard.pressed("d") || keyboard.pressed("right")){
+						if(keyboard.pressed("right")){
 							zrot += rot;
 						} 
 
-						if(keyboard.pressed("a") || keyboard.pressed("left")){
+						if(keyboard.pressed("left")){
 							zrot += -rot;
 						} 
 
@@ -209,11 +207,11 @@ var loadWorld = function() {
 						//
 
 
-						if(keyboard.pressed("w") || keyboard.pressed("up")){
+						if(keyboard.pressed("up")){
 							xrot += rot;
 						} 
 
-						if(keyboard.pressed("s") || keyboard.pressed("down")){
+						if(keyboard.pressed("down")){
 							xrot += -rot;
 						}  
 
@@ -391,7 +389,7 @@ var loadWorld = function() {
 					function(){
 						var railRef = updatable.get('railArm');
 						var max = 100;
-						if((keyboard.pressed("w") || keyboard.pressed("up")) && railRef.position.z < max){
+						if((keyboard.pressed("up")) && railRef.position.z < max){
 							$.ajax({
 								type: 'POST',
 								url: '/update',
@@ -403,7 +401,7 @@ var loadWorld = function() {
 								cache: false
 							});
 							//
-						} else if((keyboard.pressed("s") || keyboard.pressed("down")) && railRef.position.z > -max){
+						} else if((keyboard.pressed("down")) && railRef.position.z > -max){
 							$.ajax({
 								type: 'POST',
 								url: '/update',
@@ -445,7 +443,7 @@ var loadWorld = function() {
 					function(){
 						var haRef = updatable.get('hangingArm');
 						var max = 125;
-						if((keyboard.pressed("a") || keyboard.pressed("left")) && haRef.position.x < max){
+						if((keyboard.pressed("left")) && haRef.position.x < max){
 							haRef.position.x += 1;
 							$.ajax({
 								type: 'POST',
@@ -458,7 +456,7 @@ var loadWorld = function() {
 								cache: false
 							});
 							//
-						} else if((keyboard.pressed("d") || keyboard.pressed("right")) && haRef.position.x > -max){
+						} else if((keyboard.pressed("right")) && haRef.position.x > -max){
 							haRef.position.x += -1;
 							$.ajax({
 								type: 'POST',
@@ -512,25 +510,44 @@ var loadWorld = function() {
 		renderer.setSize(canvasWidth, canvasHeight);
 		renderer.setClearColor( 0xAAAAAA, 1.0 );
 
-		effect = new THREE.StereoEffect( renderer );
-		effect.setSize( window.innerWidth, window.innerHeight );
+		ua = navigator.userAgent;
 
-		// You also want a camera. The camera has a default position, but you most likely want to change this.
-		// You'll also want to allow a viewpoint that is reminiscent of using the machine as described in the pdf
-		// This might include a different position and/or a different field of view etc.
-		
 		camera = new THREE.PerspectiveCamera(45, canvasRatio, 1, 4000);
-		
-		/*camera = new THREE.StereoCamera();
-		camera.cameraL = new THREE.PerspectiveCamera(45, canvasRatio, 1, 4000); 
-		camera.cameraR = new THREE.PerspectiveCamera(45, canvasRatio, 1, 4000);
-		*/// Moving the camera with the mouse is simple enough - so this is provided. However, note that by default,
-		// the keyboard moves the viewpoint as well
-		//cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
-		cameraControls = new THREE.DeviceOrientationControls( camera );
-		camera.position.set( 800, 600, -1200);
-		//cameraControls.target.set(0,400,0);
-		
+
+		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua)){
+			effect = new THREE.StereoEffect( renderer );
+			effect.setSize( window.innerWidth, window.innerHeight );
+			cameraControls = new THREE.DeviceOrientationControls( camera );
+			camera.position.set( 800, 600, -1200);
+			console.log('mobile');
+		}else{
+			cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
+			camera.position.set( 800, 600, -1200);
+			cameraControls.target.set(0,400,0);
+			console.log('desktop');
+		}
+
+		updates.push(
+			
+			function(){
+				if(keyboard.pressed("q")){
+					camera.position.y += 1;
+				} else if(keyboard.pressed("e")){
+					camera.position.y += -1;
+				}
+				if(keyboard.pressed("w")){
+					camera.position.z += 1;
+				} else if(keyboard.pressed("s")){
+					camera.position.z += -1;
+				}
+				if(keyboard.pressed("a")){
+					camera.position.x += 1;
+				} else if(keyboard.pressed("d")){
+					camera.position.x += -1;
+				}
+			}
+
+		);
 
 		keyboard = new KeyboardState();
 
@@ -586,7 +603,11 @@ var loadWorld = function() {
 	function render() {
 		var delta = clock.getDelta();
 		cameraControls.update(delta);
-		effect.render(scene, camera);
+		if((/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua))){
+			effect.render(scene, camera);
+		}else{
+			renderer.render(scene, camera);
+		}
 	}
 
 		// Since we're such talented programmers, we include some exception handeling in case we break something
