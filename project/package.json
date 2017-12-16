@@ -9,4 +9,7 @@
     "socket.io": "^2.0.4",
     "three.js": "^0.77.1"
   }
+  "scripts": {
+    "start": "node app.js"
+  }
 }
