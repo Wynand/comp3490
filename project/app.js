@@ -56,7 +56,7 @@ http.listen(process.env.PORT || 3000,
 	function(){
 		console.log("Listening to on port %d", this.address().port);
 	}
-);
+); 
 
 function makeClawMachine(){
 	var arcadeMachine = new THREE.Group();
