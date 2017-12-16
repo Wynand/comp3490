@@ -52,9 +52,9 @@ io.on('connection',
 	}
 );
 
-http.listen(3000, 
+http.listen(process.env.PORT || 3000, 
 	function(){
-		console.log("Listening to on port 3000");
+		console.log("Listening to on port %d", this.address().port);
 	}
 );
 
