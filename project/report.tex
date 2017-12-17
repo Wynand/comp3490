@@ -146,7 +146,7 @@ effect.render(scene, camera);
  	
  		Let's assume the client already has code, somehow. \\
  		
- 		The client's freedom should be restricted, for safety.  For instance, a command might look like:
+ 		The client's freedom should be restricted, for safety.  For instance, a command which asks the server to lower the hanging arm might look like:
 
 		\begin{lstlisting}
 $.ajax({
@@ -161,26 +161,89 @@ $.ajax({
 });
  		\end{lstlisting}
 
+		Where the only unique variable are `hangingArm' and `decr', both decipherable by the server.  The `url' can also be unique, as you'll see in a bit.
+\clearpage
+		The server's handlers for different requests look something like this:
+ 		
+ 		\begin{lstlisting}
+app.post('/update', 
+  function(req, res){
+    if(updatable.has(req.body.name) && updatable.get(req.body.name).has(req.body.direction)){
+      console.log(req.body.name + " " + req.body.direction);
+      updatable.get(req.body.name).get(req.body.direction)();
+    }
+    res.send('');
+  }
+)
+ 		\end{lstlisting}
+
+In this case `updatable' is a mapping of component names to mapping of action names to the respective actions.  These actions update the model server-side and broadcast a request for all the clients to update, as follows:
+ 		
+ 		\begin{lstlisting}
+function(){
+  if(crane.position.y < 700){
+    crane.position.y += 1;
+    io.sockets.emit('crane', {data: crane.position.y});
+  }
+}
+ 		\end{lstlisting}
+ 		This specific instance updates the position of the crane, unless it's a a maximum already, and then broadcasts the new location to all the clients connected to the server.  Notice it does not tell the clients to increase the height of the crane, it simply informs them that this is the new height.  This ensures that lost packets have a minimal effect of client model synchronization.
+ 		
+ 		The client handles the broadcast message like so:
+ 		
+		\begin{lstlisting}
+socket.on('hangingArm', function(data){
+  hangingArm.position.x = data.data;
+});
+ 		\end{lstlisting}
+ 		
+ 		And finally the arm's position is updated.
+
+		Note:  This communication is implemented in socket.io and express, but may be similiarly connected using other libraries.
 		
-\end{enumerate} \clearpage
+\end{enumerate} 
+
+Also worth noting is that the implementation of Virtual Reality is not directly tied to the implementation of the multiplayer game.  Although the dependancy on online communication has implications for the user experience in VR, it does not affect how VR is implimented.
+
+\clearpage
 
 %----------------------------------------------------------------------------------------
 %	SECTION 4
 %----------------------------------------------------------------------------------------
 
-\section{Results and Conclusions}
+\section{Concerns with VR user experience}
+
+	As we learned in class, virtual reality can make people nautious.  Delayed feedback on your environment, cognitive dissonance on the nature of your environment as well as weird physics you're not used to can make people uncomfortable.  A large concern I had going into this project was latency, because it's core to the nature of how we get feedback from our environment. \\
+	
+	On an online server the latency is very noticeable, while on a local server (on the same Local Area Network) the latency is rarely noticable, and infrequently affects the experience if at all.  \\
+	
+	An issue I had with the implementation of this specific application is that there are few common tools people can use for input when their phone is inside a VR cardboard style headset.  The multiplayer aspect of the resulting application almost fixes this by allowing you to simply have the app open on desktop as well as on your phone, but this doesn't work as well when 
 
 %----------------------------------------------------------------------------------------
 %	SECTION 5
 %----------------------------------------------------------------------------------------
 
-\section{Concerns with VR user experience }
+\section{Results and Conclusions}
+
+	It worked.  One of the main things I was looking for in this project was if it would even be possible for VR to be part of a multiplayer mobile game, and now we know it is (at least for very simple games).  The frame rate stayed high, the latency was not ideal online but acceptable on a LAN.  With a controller for your phone, or control based on direction, you could make a fully fledged mobile game. \\
+	
+	I've implemented this with a very simple game, which we saw in assignment 1, but I will conclude this can be done with most games in Three.js, and most of my peers who I've shown my code to tend to agree, though few grasp the networking side. \clearpage
 
 %----------------------------------------------------------------------------------------
 %	SECTION 6
 %----------------------------------------------------------------------------------------
 
 \section{What's next}
+
+	I know now that it is possible to make a simple multiplayer VR application, and as a result to share a virtual space with someone without special hardware being necessary.  What I would like to see is more VR applications become democratized, and for them to possibly open up a world of new experience. \\
+
+	Part of this process is peripherals.  Many gaming controllers already have excellent tactile feedback (for when you can't look at your controller) but as any first person shooter gamer with a pc can tell you, controllers give a distinct disadvantage to a player in terms of reaction time and precision.  Most fps gamers prefer a mouse and keyboard for this reason.  An alternative of the mouse and keyboard combo with the same effectiveness. \\
+
+	In my application I didn't implement any physics, but handling physics is somewhat solved in many games, such as World of Warcraft, Overwatch, Call of Duty, or many other examples of massively multiplayer games with physics implemented.  A future verison of this project might look at what level we can implement real looking (and feeling) physics. \\
+
+	Finally, on a personal note, I would like to implement a simple game akin to what you might have seen `in the old days' on a gamecube, XBOX or a Playstation 2.  The reason why I would like to implement a game from that era is because the multiplayer aspect of those games was almost entirely focussed on couch-coop, or couch-pvp.  At the moment this mean you could have a local game over LAN (to reduce latency) and have an experience similiar to the old days, but in VR.  Specifically, the multiplayer mode from `Goldeneye: Rogue Agent' would be an excellent candidate for this.  The environments are fairly limited, the physics is straightforward, and the concept of the game has proven to be very fun.  I will however note that screenpeeking would not be possible.
+
+	
 
 %----------------------------------------------------------------------------------------
 
